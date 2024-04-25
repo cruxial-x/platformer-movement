@@ -6,6 +6,7 @@ public class PlatformerMovement : MonoBehaviour
   [Header("Movement Properties")]
   public float speed = 10;
   public float jumpForce = 5;
+  public int airJumps = 1;
   public float jumpBufferLength = 0.1f;
   public float coyoteTimeLength = 0.2f;
   public float friction = 0;
@@ -35,6 +36,7 @@ public class PlatformerMovement : MonoBehaviour
     platformerState = new PlatformerState();
     if (animator == null)
       animator = GetComponent<Animator>();
+    platformerState.airJumps = airJumps;
   }
 
   void SetFriction(float rbFriction)
@@ -54,6 +56,22 @@ public class PlatformerMovement : MonoBehaviour
     CheckGroundStatus();
     ManageJumpBuffer();
     ToggleWeapon(ref platformerState.weaponSheathed);
+
+    // Check if the character has reached the peak of the jump
+    if (platformerState.isJumping && character.velocity.y <= 0.01f)
+      platformerState.isJumping = false;
+
+    // Update the animator parameters
+    if (animator != null)
+    {
+      bool isJumping = platformerState.isJumping;
+      animator.SetBool("Jumping", isJumping);
+      animator.SetBool("AirJump", isJumping && platformerState.airJumps < 1);
+      animator.SetBool("Falling", !platformerState.isGrounded && !isJumping);
+    }
+    // Update the "DoubleJump" animator parameter
+    // if (animator != null)
+    //   animator.SetBool("DoubleJump", platformerState.isJumping && platformerState.airJumps < 1);
   }
 
   void FixedUpdate()
@@ -79,7 +97,15 @@ public class PlatformerMovement : MonoBehaviour
 
   private void CheckGroundStatus()
   {
+    bool wasGrounded = platformerState.isGrounded;
     platformerState.isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
+
+    // If the player was not grounded but is now, they have landed
+    if (!wasGrounded && platformerState.isGrounded)
+    {
+      platformerState.isJumping = false;
+      platformerState.airJumps = airJumps; // Reset airJumps when the player lands
+    }
   }
 
   private void ManageJumpBuffer()
@@ -91,7 +117,8 @@ public class PlatformerMovement : MonoBehaviour
     if (Input.GetButtonDown("Jump"))
       jumpBufferCount = jumpBufferLength;
 
-    if (jumpBufferCount > 0 && coyoteTime > 0)
+
+    if ((jumpBufferCount > 0 && coyoteTime > 0) || (Input.GetButtonDown("Jump") && platformerState.airJumps > 0))
     {
       Jump();
       jumpBufferCount = 0;
@@ -108,7 +135,16 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Jump()
   {
-    character.velocity = new Vector2(character.velocity.x, jumpForce);
+    // Only allow jumping if the player is grounded or has air jumps left
+    if (platformerState.isGrounded || platformerState.airJumps > 0)
+    {
+      character.velocity = new Vector2(character.velocity.x, jumpForce);
+      platformerState.isJumping = true;
+
+      // Decrement airJumps if the player is not grounded
+      if (!platformerState.isGrounded)
+        platformerState.airJumps--;
+    }
   }
 
   private void FlipCharacterBasedOnInput()
