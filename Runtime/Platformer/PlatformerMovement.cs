@@ -9,21 +9,18 @@ public class PlatformerMovement : MonoBehaviour
   public int airJumps = 1;
   public float jumpBufferLength = 0.1f;
   public float coyoteTimeLength = 0.2f;
-  public float friction = 0;
 
   [Header("Physics")]
   public Transform groundCheck;
   public float checkRadius;
   public LayerMask whatIsGround;
+  public float friction = 0;
 
   private Rigidbody2D character;
   private float horizontalInput;
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
-  public Animator animator;
-  public string horizontalAnimatorBool = "Running";
-
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -33,10 +30,10 @@ public class PlatformerMovement : MonoBehaviour
   {
     character = GetComponent<Rigidbody2D>();
     SetFriction(friction);
-    platformerState = new PlatformerState();
-    if (animator == null)
-      animator = GetComponent<Animator>();
-    platformerState.airJumps = airJumps;
+    platformerState = new PlatformerState
+    {
+      airJumps = airJumps
+    };
   }
 
   void SetFriction(float rbFriction)
@@ -60,18 +57,6 @@ public class PlatformerMovement : MonoBehaviour
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f)
       platformerState.isJumping = false;
-
-    // Update the animator parameters
-    if (animator != null)
-    {
-      bool isJumping = platformerState.isJumping;
-      animator.SetBool("Jumping", isJumping);
-      animator.SetBool("AirJump", isJumping && platformerState.airJumps < 1);
-      animator.SetBool("Falling", !platformerState.isGrounded && !isJumping);
-    }
-    // Update the "DoubleJump" animator parameter
-    // if (animator != null)
-    //   animator.SetBool("DoubleJump", platformerState.isJumping && platformerState.airJumps < 1);
   }
 
   void FixedUpdate()
@@ -83,16 +68,13 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (Input.GetKeyDown(KeyCode.Q))
       sheathed = !sheathed;
-    if (animator != null)
-      animator.SetBool("Sheathed", sheathed);
   }
 
   private void HandleInput()
   {
     horizontalInput = Input.GetAxis("Horizontal");
+    platformerState.isMoving = horizontalInput != 0;
     FlipCharacterBasedOnInput();
-    if (animator != null)
-      animator.SetBool(horizontalAnimatorBool, horizontalInput != 0);
   }
 
   private void CheckGroundStatus()
