@@ -1,0 +1,12 @@
+{
+  "name": "com.cruxial-x.platformer",
+  "version": "0.0.1",
+  "displayName": "Platformer Movement",
+  "description": "A basic platformer character controller for Unity.",
+  "unity": "2022.3",
+  "keywords": ["platformer", "character", "controller"],
+  "author": {
+    "name": "Cruxial-X",
+    "url": "https://github.com/cruxial-x"
+  }
+}
