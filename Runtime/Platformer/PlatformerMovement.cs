@@ -8,6 +8,7 @@ public class PlatformerMovement : MonoBehaviour
   public float jumpForce = 5;
   public float jumpBufferLength = 0.1f;
   public float coyoteTimeLength = 0.2f;
+  public float friction = 0;
 
   [Header("Physics")]
   public Transform groundCheck;
@@ -19,6 +20,7 @@ public class PlatformerMovement : MonoBehaviour
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
+  public Animator animator;
 
   void OnDrawGizmos()
   {
@@ -28,7 +30,19 @@ public class PlatformerMovement : MonoBehaviour
   void Awake()
   {
     character = GetComponent<Rigidbody2D>();
+    SetFriction(friction);
     platformerState = new PlatformerState();
+    if (animator == null)
+      animator = GetComponent<Animator>();
+  }
+
+  void SetFriction(float rbFriction)
+  {
+    PhysicsMaterial2D physicsMaterial = new PhysicsMaterial2D
+    {
+      friction = rbFriction
+    };
+    character.sharedMaterial = physicsMaterial;
   }
 
   void Update()
@@ -50,6 +64,8 @@ public class PlatformerMovement : MonoBehaviour
   {
     horizontalInput = Input.GetAxis("Horizontal");
     FlipCharacterBasedOnInput();
+    if (animator != null)
+      animator.SetBool("Running", horizontalInput != 0);
   }
 
   private void CheckGroundStatus()
