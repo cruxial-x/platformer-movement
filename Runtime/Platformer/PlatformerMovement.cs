@@ -19,16 +19,24 @@ public class PlatformerMovement : MonoBehaviour
 
   private Rigidbody2D character;
   private float horizontalInput;
+  private float verticalInput;
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
   [Tooltip("Check if using ApplyJumpForce method in an animation event")]
   public bool useJumpAnimationEvent = false;
   private bool jumpAnimationFinished = true;
+  public LayerMask whatIsWall;
+  public Transform wallCheck;
+  public float wallCheckDistance = 0.1f;
+  private bool isTouchingWall;
+  private float climbingSpeed = 5;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
     Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
+    Gizmos.color = Color.blue;
+    Gizmos.DrawWireSphere(wallCheck.position, wallCheckDistance);
   }
   void Awake()
   {
@@ -61,13 +69,33 @@ public class PlatformerMovement : MonoBehaviour
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
       platformerState.isJumping = false;
-    FastFall();
+  }
+  void WallClimb()
+  {
+    isTouchingWall = Physics2D.Raycast(wallCheck.position, Vector2.right * transform.localScale.x, wallCheckDistance, whatIsWall);
+    if (isTouchingWall && !platformerState.isGrounded)
+    {
+      if (verticalInput > 0)
+      {
+        platformerState.wallClimbing = true;
+        platformerState.wallSliding = false;
+        character.velocity = new Vector2(0, climbingSpeed);
+      }
+      else
+      {
+        platformerState.wallClimbing = false;
+        platformerState.wallSliding = true;
+        character.velocity = new Vector2(0, -climbingSpeed / 2);
+      }
+    }
   }
 
   void FixedUpdate()
   {
     if (!platformerState.dashing)
       Move();
+    WallClimb();
+    FastFall();
   }
   void ToggleWeapon(ref bool sheathed)
   {
@@ -78,6 +106,7 @@ public class PlatformerMovement : MonoBehaviour
   private void HandleInput()
   {
     horizontalInput = Input.GetAxis("Horizontal");
+    verticalInput = Input.GetAxis("Vertical");
     platformerState.isMoving = horizontalInput != 0;
     FlipCharacterBasedOnInput();
   }
@@ -162,7 +191,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FastFall()
   {
-    if (Input.GetAxis("Vertical") < 0 && platformerState.IsFalling)
+    if (verticalInput < 0 && platformerState.IsFalling)
     {
       character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
     }

@@ -6,6 +6,8 @@ public class PlatformerState
   public bool isFacingRight = true;
   public int airJumps = 1;
   public bool isJumping = false;
+  public bool wallClimbing = false;
+  public bool wallSliding = false;
   public bool weaponSheathed = true;
   public bool IsFalling
   {
