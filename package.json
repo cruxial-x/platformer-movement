@@ -1,5 +1,5 @@
 {
-  "name": "com.cruxial-x.platformer",
+  "name": "com.cruxial-x.platformer-movement",
   "version": "0.0.1",
   "displayName": "Platformer Movement",
   "description": "A basic platformer character controller for Unity.",
