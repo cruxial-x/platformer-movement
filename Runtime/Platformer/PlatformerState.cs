@@ -13,7 +13,7 @@ public class PlatformerState
   {
     get
     {
-      return !isGrounded && !isJumping;
+      return !isGrounded && !isJumping && !wallSliding && !wallClimbing;
     }
   }
 }

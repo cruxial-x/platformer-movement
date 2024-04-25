@@ -69,6 +69,12 @@ public class PlatformerMovement : MonoBehaviour
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
       platformerState.isJumping = false;
+
+    if (platformerState.isGrounded)
+    {
+      platformerState.wallClimbing = false;
+      platformerState.wallSliding = false;
+    }
   }
   void WallClimb()
   {
@@ -79,12 +85,14 @@ public class PlatformerMovement : MonoBehaviour
       {
         platformerState.wallClimbing = true;
         platformerState.wallSliding = false;
+        platformerState.isJumping = false;
         character.velocity = new Vector2(0, climbingSpeed);
       }
       else
       {
         platformerState.wallClimbing = false;
         platformerState.wallSliding = true;
+        platformerState.isJumping = false;
         character.velocity = new Vector2(0, -climbingSpeed / 2);
       }
     }
@@ -107,7 +115,6 @@ public class PlatformerMovement : MonoBehaviour
   {
     horizontalInput = Input.GetAxis("Horizontal");
     verticalInput = Input.GetAxis("Vertical");
-    platformerState.isMoving = horizontalInput != 0;
     FlipCharacterBasedOnInput();
   }
 
@@ -146,7 +153,10 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
+    if (platformerState.wallClimbing || platformerState.wallSliding)
+      return;
     character.velocity = new Vector2(horizontalInput * speed, character.velocity.y);
+    platformerState.isMoving = horizontalInput != 0;
   }
 
   private void Jump()

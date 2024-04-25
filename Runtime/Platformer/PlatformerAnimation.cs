@@ -11,6 +11,8 @@ public class PlatformerAnimation : MonoBehaviour
   public string fallingParam = "Falling";
   public string runningParam = "Running";
   public string sheathedParam = "Sheathed";
+  public string wallClimbingParam = "WallClimbing";
+  public string wallSlidingParam = "WallSliding";
 
   public void Start()
   {
@@ -29,6 +31,8 @@ public class PlatformerAnimation : MonoBehaviour
       animator.SetBool(fallingParam, platformerState.IsFalling);
       animator.SetBool(runningParam, platformerState.isMoving);
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
+      animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
+      animator.SetBool(wallSlidingParam, platformerState.wallSliding);
     }
   }
 }
