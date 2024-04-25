@@ -1,0 +1,29 @@
+# Ignore .meta files
+*.meta
+
+# Ignore temporary files
+Temp/
+Library/
+Logs/
+
+# Ignore build files
+Build/
+Builds/
+
+# Ignore user-specific files
+*.sln
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.user
+*.unityproj
+*.booproj
+
+# Ignore crash reports
+sysinfo.txt
+crashlytics-build.properties
+
+# Ignore cache directories
+.vs/
+.vscode/

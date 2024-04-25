@@ -1,10 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerDash : MonoBehaviour
+public class PlatformerDash : MonoBehaviour
 {
   public float dashSpeed = 30;
-  public float dashTime = 1;
+  public float dashTime = 0.5f;
   public float dashCooldown = 0.5f;
   private bool canDash = true;
   private bool dashed = false;
