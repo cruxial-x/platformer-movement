@@ -20,6 +20,11 @@ public class PlatformerMovement : MonoBehaviour
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
 
+  void OnDrawGizmos()
+  {
+    Gizmos.color = Color.red;
+    Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
+  }
   void Awake()
   {
     character = GetComponent<Rigidbody2D>();
