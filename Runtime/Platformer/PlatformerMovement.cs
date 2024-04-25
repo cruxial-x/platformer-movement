@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlatformerMovement : MonoBehaviour
@@ -21,6 +22,8 @@ public class PlatformerMovement : MonoBehaviour
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
+  [Tooltip("Check if using ApplyJumpForce method in an animation event")]
+  public bool useJumpAnimationEvent = false;
   private bool jumpAnimationFinished = true;
   void OnDrawGizmos()
   {
@@ -124,6 +127,12 @@ public class PlatformerMovement : MonoBehaviour
 
       platformerState.isJumping = true;
       jumpAnimationFinished = false;
+
+      // If not using animation event, apply jump force immediately
+      if (!useJumpAnimationEvent)
+      {
+        ApplyJumpForce();
+      }
 
       // Decrement airJumps if the player is not grounded
       if (!platformerState.isGrounded)
