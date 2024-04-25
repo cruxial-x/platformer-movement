@@ -21,6 +21,7 @@ public class PlatformerMovement : MonoBehaviour
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
   public Animator animator;
+  public string horizontalAnimatorBool = "Running";
 
   void OnDrawGizmos()
   {
@@ -65,7 +66,7 @@ public class PlatformerMovement : MonoBehaviour
     horizontalInput = Input.GetAxis("Horizontal");
     FlipCharacterBasedOnInput();
     if (animator != null)
-      animator.SetBool("Running", horizontalInput != 0);
+      animator.SetBool(horizontalAnimatorBool, horizontalInput != 0);
   }
 
   private void CheckGroundStatus()
