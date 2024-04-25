@@ -140,11 +140,21 @@ public class PlatformerMovement : MonoBehaviour
     }
   }
 
-#pragma warning disable IDE0051 // Used in Jumping animation event
-  private void ApplyJumpForce()
+#pragma warning disable IDE0051 
+  private void ApplyJumpForce() // Fires at end of jumpsquat in jump animation
   {
     if (jumpAnimationFinished) return;
-    character.velocity = new Vector2(character.velocity.x, jumpForce);
+    // Check if the jump button is still being held down
+    if (Input.GetButton("Jump"))
+    {
+      // If it is, apply the full jump force
+      character.velocity = new Vector2(character.velocity.x, jumpForce);
+    }
+    else
+    {
+      // If it isn't, apply half the jump force
+      character.velocity = new Vector2(character.velocity.x, jumpForce / 2);
+    }
     jumpAnimationFinished = true;
   }
 #pragma warning restore IDE0051
