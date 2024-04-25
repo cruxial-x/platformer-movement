@@ -22,7 +22,6 @@ public class PlatformerMovement : MonoBehaviour
   [HideInInspector] public PlatformerState platformerState;
   public Animator animator;
   public string horizontalAnimatorBool = "Running";
-  private bool sheathed = false;
 
   void OnDrawGizmos()
   {
@@ -54,7 +53,7 @@ public class PlatformerMovement : MonoBehaviour
     HandleInput();
     CheckGroundStatus();
     ManageJumpBuffer();
-    ToggleWeapon();
+    ToggleWeapon(ref platformerState.weaponSheathed);
   }
 
   void FixedUpdate()
@@ -62,7 +61,7 @@ public class PlatformerMovement : MonoBehaviour
     if (!platformerState.dashing)
       Move();
   }
-  void ToggleWeapon()
+  void ToggleWeapon(ref bool sheathed)
   {
     if (Input.GetKeyDown(KeyCode.Q))
       sheathed = !sheathed;
