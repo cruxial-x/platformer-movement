@@ -61,6 +61,7 @@ public class PlatformerMovement : MonoBehaviour
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
       platformerState.isJumping = false;
+    FastFall();
   }
 
   void FixedUpdate()
@@ -158,6 +159,14 @@ public class PlatformerMovement : MonoBehaviour
     jumpAnimationFinished = true;
   }
 #pragma warning restore IDE0051
+
+  private void FastFall()
+  {
+    if (Input.GetAxis("Vertical") < 0 && platformerState.IsFalling)
+    {
+      character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
+    }
+  }
 
   private void FlipCharacterBasedOnInput()
   {

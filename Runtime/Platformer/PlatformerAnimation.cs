@@ -26,7 +26,7 @@ public class PlatformerAnimation : MonoBehaviour
       bool isJumping = platformerState.isJumping;
       animator.SetBool(jumpingParam, isJumping);
       animator.SetBool(airJumpParam, isJumping && platformerState.airJumps < 1);
-      animator.SetBool(fallingParam, !platformerState.isGrounded && !isJumping);
+      animator.SetBool(fallingParam, platformerState.IsFalling);
       animator.SetBool(runningParam, platformerState.isMoving);
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
     }

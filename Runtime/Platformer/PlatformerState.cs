@@ -7,4 +7,11 @@ public class PlatformerState
   public int airJumps = 1;
   public bool isJumping = false;
   public bool weaponSheathed = true;
+  public bool IsFalling
+  {
+    get
+    {
+      return !isGrounded && !isJumping;
+    }
+  }
 }
