@@ -21,6 +21,7 @@ public class PlatformerMovement : MonoBehaviour
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
+  private bool jumpAnimationFinished = true;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -55,7 +56,7 @@ public class PlatformerMovement : MonoBehaviour
     ToggleWeapon(ref platformerState.weaponSheathed);
 
     // Check if the character has reached the peak of the jump
-    if (platformerState.isJumping && character.velocity.y <= 0.01f)
+    if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
       platformerState.isJumping = false;
   }
 
@@ -120,14 +121,24 @@ public class PlatformerMovement : MonoBehaviour
     // Only allow jumping if the player is grounded or has air jumps left
     if (platformerState.isGrounded || platformerState.airJumps > 0)
     {
-      character.velocity = new Vector2(character.velocity.x, jumpForce);
+
       platformerState.isJumping = true;
+      jumpAnimationFinished = false;
 
       // Decrement airJumps if the player is not grounded
       if (!platformerState.isGrounded)
         platformerState.airJumps--;
     }
   }
+
+#pragma warning disable IDE0051 // Used in Jumping animation event
+  private void ApplyJumpForce()
+  {
+    if (jumpAnimationFinished) return;
+    character.velocity = new Vector2(character.velocity.x, jumpForce);
+    jumpAnimationFinished = true;
+  }
+#pragma warning restore IDE0051
 
   private void FlipCharacterBasedOnInput()
   {
