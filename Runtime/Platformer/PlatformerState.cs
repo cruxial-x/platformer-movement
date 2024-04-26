@@ -9,11 +9,19 @@ public class PlatformerState
   public bool wallClimbing = false;
   public bool wallSliding = false;
   public bool weaponSheathed = true;
+  public bool wallKicking = false;
   public bool IsFalling
   {
     get
     {
       return !isGrounded && !isJumping && !wallSliding && !wallClimbing;
+    }
+  }
+  public bool IsClimbing
+  {
+    get
+    {
+      return wallClimbing || wallSliding;
     }
   }
 }

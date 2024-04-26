@@ -31,6 +31,14 @@ public class PlatformerMovement : MonoBehaviour
   public float wallCheckDistance = 0.1f;
   private bool isTouchingWall;
   private float climbingSpeed = 5;
+  private bool ignoreInput = false;
+
+  private IEnumerator IgnoreInputForSeconds(float seconds)
+  {
+    ignoreInput = true;
+    yield return new WaitForSeconds(seconds);
+    ignoreInput = false;
+  }
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -68,7 +76,10 @@ public class PlatformerMovement : MonoBehaviour
 
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
+    {
       platformerState.isJumping = false;
+      platformerState.wallKicking = false;
+    }
 
     if (platformerState.isGrounded)
     {
@@ -81,8 +92,12 @@ public class PlatformerMovement : MonoBehaviour
       platformerState.wallSliding = false;
     }
   }
-  void WallClimb()
+  void ManageWalls()
   {
+    if (platformerState.wallKicking)
+    {
+      return;
+    }
     isTouchingWall = Physics2D.Raycast(wallCheck.position, Vector2.right * transform.localScale.x, wallCheckDistance, whatIsWall);
     if (isTouchingWall && !platformerState.isGrounded)
     {
@@ -107,7 +122,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (!platformerState.dashing)
       Move();
-    WallClimb();
+    ManageWalls();
     FastFall();
   }
   void ToggleWeapon(ref bool sheathed)
@@ -138,6 +153,20 @@ public class PlatformerMovement : MonoBehaviour
 
   private void ManageJumpBuffer()
   {
+    if (platformerState.IsClimbing)
+    {
+      if (Input.GetButtonDown("Jump"))
+      {
+        platformerState.wallClimbing = false;
+        platformerState.wallSliding = false;
+        platformerState.isJumping = true;
+        platformerState.wallKicking = true;
+        StartCoroutine(IgnoreInputForSeconds(0.1f));
+        Debug.Log("Transform.localScale.x " + transform.localScale.x);
+        character.velocity = new Vector2(-transform.localScale.x * speed, jumpForce);
+      }
+      return;
+    }
     if (platformerState.isGrounded)
       coyoteTime = coyoteTimeLength;
     else
@@ -158,6 +187,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
+    if (ignoreInput) return;
     character.velocity = new Vector2(horizontalInput * speed, character.velocity.y);
     platformerState.isMoving = horizontalInput != 0;
   }

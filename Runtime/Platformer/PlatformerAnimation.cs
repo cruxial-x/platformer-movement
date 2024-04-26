@@ -13,12 +13,14 @@ public class PlatformerAnimation : MonoBehaviour
   public string sheathedParam = "Sheathed";
   public string wallClimbingParam = "WallClimbing";
   public string wallSlidingParam = "WallSliding";
+  private int initialAirJumps;
 
   public void Start()
   {
     if (animator == null)
       animator = GetComponent<Animator>();
     platformerState = GetComponent<PlatformerMovement>().platformerState;
+    initialAirJumps = platformerState.airJumps;
   }
 
   public void Update()
@@ -27,9 +29,12 @@ public class PlatformerAnimation : MonoBehaviour
     {
       bool isJumping = platformerState.isJumping;
       animator.SetBool(jumpingParam, isJumping);
-      animator.SetBool(airJumpParam, isJumping && platformerState.airJumps < 1);
+      animator.SetBool(airJumpParam, (
+        isJumping && platformerState.airJumps < initialAirJumps)
+        || platformerState.wallKicking // Wallkick uses air jump animation
+        );
       animator.SetBool(fallingParam, platformerState.IsFalling);
-      animator.SetBool(runningParam, platformerState.isMoving);
+      animator.SetBool(runningParam, platformerState.isMoving && platformerState.isGrounded);
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
       animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
       animator.SetBool(wallSlidingParam, platformerState.wallSliding);
