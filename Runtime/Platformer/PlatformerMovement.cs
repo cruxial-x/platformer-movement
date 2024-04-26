@@ -75,6 +75,11 @@ public class PlatformerMovement : MonoBehaviour
       platformerState.wallClimbing = false;
       platformerState.wallSliding = false;
     }
+    if (!isTouchingWall)
+    {
+      platformerState.wallClimbing = false;
+      platformerState.wallSliding = false;
+    }
   }
   void WallClimb()
   {
@@ -153,8 +158,6 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
-    if (platformerState.wallClimbing || platformerState.wallSliding)
-      return;
     character.velocity = new Vector2(horizontalInput * speed, character.velocity.y);
     platformerState.isMoving = horizontalInput != 0;
   }
