@@ -31,14 +31,6 @@ public class PlatformerMovement : MonoBehaviour
   public float wallCheckDistance = 0.1f;
   private bool isTouchingWall;
   private float climbingSpeed = 5;
-  private bool ignoreInput = false;
-
-  private IEnumerator IgnoreInputForSeconds(float seconds)
-  {
-    ignoreInput = true;
-    yield return new WaitForSeconds(seconds);
-    ignoreInput = false;
-  }
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -161,7 +153,6 @@ public class PlatformerMovement : MonoBehaviour
         platformerState.wallSliding = false;
         platformerState.isJumping = true;
         platformerState.wallKicking = true;
-        StartCoroutine(IgnoreInputForSeconds(0.1f));
         Debug.Log("Transform.localScale.x " + transform.localScale.x);
         character.velocity = new Vector2(-transform.localScale.x * speed, jumpForce);
       }
@@ -187,7 +178,6 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
-    if (ignoreInput) return;
     character.velocity = new Vector2(horizontalInput * speed, character.velocity.y);
     platformerState.isMoving = horizontalInput != 0;
   }
