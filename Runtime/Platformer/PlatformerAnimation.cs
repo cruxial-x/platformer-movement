@@ -38,6 +38,7 @@ public class PlatformerAnimation : MonoBehaviour
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
       animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
       animator.SetBool(wallSlidingParam, platformerState.wallSliding);
+      animator.SetBool("Sliding", platformerState.sliding);
     }
   }
 }

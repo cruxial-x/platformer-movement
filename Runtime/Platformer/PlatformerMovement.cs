@@ -31,6 +31,8 @@ public class PlatformerMovement : MonoBehaviour
   public float wallCheckDistance = 0.1f;
   private bool isTouchingWall;
   private float climbingSpeed = 5;
+  public BoxCollider2D normalCollider;
+  public BoxCollider2D slideCollider;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -59,13 +61,15 @@ public class PlatformerMovement : MonoBehaviour
 
   void Update()
   {
-    if (platformerState.dashing) return;
+    if (platformerState.dashing || platformerState.sliding) return;
 
     HandleInput();
     CheckGroundStatus();
     ManageJumpBuffer();
     ToggleWeapon(ref platformerState.weaponSheathed);
-
+    StartSlide();
+    normalCollider.enabled = !platformerState.sliding;
+    slideCollider.enabled = !normalCollider.enabled;
     // Check if the character has reached the peak of the jump
     if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
     {
@@ -112,8 +116,9 @@ public class PlatformerMovement : MonoBehaviour
 
   void FixedUpdate()
   {
-    if (!platformerState.dashing)
-      Move();
+    Slide();
+    if (platformerState.dashing || platformerState.sliding) return;
+    Move();
     ManageWalls();
     FastFall();
   }
@@ -202,8 +207,21 @@ public class PlatformerMovement : MonoBehaviour
         platformerState.airJumps--;
     }
   }
-
-#pragma warning disable IDE0051 
+  private void StartSlide()
+  {
+    if (platformerState.isGrounded && Input.GetKeyDown(KeyCode.LeftShift) && !platformerState.sliding)
+    {
+      platformerState.sliding = true;
+    }
+  }
+  private void Slide()
+  {
+    if (platformerState.sliding)
+    {
+      character.velocity = new Vector2(transform.localScale.x * speed, character.velocity.y);
+    }
+  }
+#pragma warning disable IDE0051
   private void ApplyJumpForce() // Fires at end of jumpsquat in jump animation
   {
     if (jumpAnimationFinished) return;
@@ -220,7 +238,12 @@ public class PlatformerMovement : MonoBehaviour
     }
     jumpAnimationFinished = true;
   }
+  private void EndSlide() // Fires at end of slide animation
+  {
+    platformerState.sliding = false;
+  }
 #pragma warning restore IDE0051
+
 
   private void FastFall()
   {
