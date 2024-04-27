@@ -25,20 +25,13 @@ public class PlatformerMovement : MonoBehaviour
   [HideInInspector] public PlatformerState platformerState;
   [Tooltip("Check if using ApplyJumpForce method in an animation event")]
   public bool useJumpAnimationEvent = false;
-  private bool jumpAnimationFinished = true;
-  public LayerMask whatIsWall;
-  public Transform wallCheck;
-  public float wallCheckDistance = 0.1f;
-  private bool isTouchingWall;
-  private float climbingSpeed = 5;
+  [HideInInspector] public bool jumpAnimationFinished = true;
   public BoxCollider2D normalCollider;
   public BoxCollider2D slideCollider;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
     Gizmos.DrawWireSphere(groundCheck.position, checkRadius);
-    Gizmos.color = Color.blue;
-    Gizmos.DrawWireSphere(wallCheck.position, wallCheckDistance);
   }
   void Awake()
   {
@@ -76,42 +69,6 @@ public class PlatformerMovement : MonoBehaviour
       platformerState.isJumping = false;
       platformerState.wallKicking = false;
     }
-
-    if (platformerState.isGrounded)
-    {
-      platformerState.wallClimbing = false;
-      platformerState.wallSliding = false;
-    }
-    if (!isTouchingWall)
-    {
-      platformerState.wallClimbing = false;
-      platformerState.wallSliding = false;
-    }
-  }
-  void ManageWalls()
-  {
-    if (platformerState.wallKicking)
-    {
-      return;
-    }
-    isTouchingWall = Physics2D.Raycast(wallCheck.position, Vector2.right * transform.localScale.x, wallCheckDistance, whatIsWall);
-    if (isTouchingWall && !platformerState.isGrounded)
-    {
-      if (verticalInput > 0)
-      {
-        platformerState.wallClimbing = true;
-        platformerState.wallSliding = false;
-        platformerState.isJumping = false;
-        character.velocity = new Vector2(0, climbingSpeed);
-      }
-      else
-      {
-        platformerState.wallClimbing = false;
-        platformerState.wallSliding = true;
-        platformerState.isJumping = false;
-        character.velocity = new Vector2(0, -climbingSpeed / 2);
-      }
-    }
   }
 
   void FixedUpdate()
@@ -119,7 +76,6 @@ public class PlatformerMovement : MonoBehaviour
     Slide();
     if (platformerState.dashing || platformerState.sliding) return;
     Move();
-    ManageWalls();
     FastFall();
   }
   void ToggleWeapon(ref bool sheathed)
@@ -150,19 +106,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void ManageJumpBuffer()
   {
-    if (platformerState.IsClimbing)
-    {
-      if (Input.GetButtonDown("Jump"))
-      {
-        platformerState.wallClimbing = false;
-        platformerState.wallSliding = false;
-        platformerState.isJumping = true;
-        platformerState.wallKicking = true;
-        Debug.Log("Transform.localScale.x " + transform.localScale.x);
-        character.velocity = new Vector2(-transform.localScale.x * speed, jumpForce);
-      }
-      return;
-    }
+    if (platformerState.IsClimbing) return;
     if (platformerState.isGrounded)
       coyoteTime = coyoteTimeLength;
     else
@@ -189,6 +133,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Jump()
   {
+    if (platformerState.wallKicking) return;
     // Only allow jumping if the player is grounded or has air jumps left
     if (platformerState.isGrounded || platformerState.airJumps > 0)
     {
