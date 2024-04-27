@@ -1,6 +1,3 @@
-# Ignore .meta files
-*.meta
-
 # Ignore temporary files
 Temp/
 Library/
