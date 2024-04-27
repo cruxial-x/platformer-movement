@@ -18,8 +18,6 @@ public class PlatformerMovement : MonoBehaviour
   public float friction = 0;
 
   private Rigidbody2D character;
-  private float horizontalInput;
-  private float verticalInput;
   private float jumpBufferCount;
   private float coyoteTime;
   [HideInInspector] public PlatformerState platformerState;
@@ -28,6 +26,7 @@ public class PlatformerMovement : MonoBehaviour
   [HideInInspector] public bool jumpAnimationFinished = true;
   public BoxCollider2D normalCollider;
   public BoxCollider2D slideCollider;
+  private InputHandler inputHandler;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -41,6 +40,7 @@ public class PlatformerMovement : MonoBehaviour
     {
       airJumps = airJumps
     };
+    inputHandler = new InputHandler();
   }
 
   void SetFriction(float rbFriction)
@@ -56,7 +56,8 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (platformerState.dashing || platformerState.sliding) return;
 
-    HandleInput();
+    inputHandler.HandleInput();
+    FlipCharacterBasedOnInput();
     CheckGroundStatus();
     ManageJumpBuffer();
     ToggleWeapon(ref platformerState.weaponSheathed);
@@ -84,13 +85,6 @@ public class PlatformerMovement : MonoBehaviour
       sheathed = !sheathed;
   }
 
-  private void HandleInput()
-  {
-    horizontalInput = Input.GetAxis("Horizontal");
-    verticalInput = Input.GetAxis("Vertical");
-    FlipCharacterBasedOnInput();
-  }
-
   private void CheckGroundStatus()
   {
     bool wasGrounded = platformerState.isGrounded;
@@ -111,11 +105,11 @@ public class PlatformerMovement : MonoBehaviour
       coyoteTime = coyoteTimeLength;
     else
       coyoteTime -= Time.deltaTime;
-    if (Input.GetButtonDown("Jump"))
+    if (inputHandler.JumpButtonDown)
       jumpBufferCount = jumpBufferLength;
 
 
-    if ((jumpBufferCount > 0 && coyoteTime > 0) || (Input.GetButtonDown("Jump") && platformerState.airJumps > 0))
+    if ((jumpBufferCount > 0 && coyoteTime > 0) || (inputHandler.JumpButtonDown && platformerState.airJumps > 0))
     {
       Jump();
       jumpBufferCount = 0;
@@ -127,8 +121,8 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
-    character.velocity = new Vector2(horizontalInput * speed, character.velocity.y);
-    platformerState.isMoving = horizontalInput != 0;
+    character.velocity = new Vector2(inputHandler.HorizontalInput * speed, character.velocity.y);
+    platformerState.isMoving = inputHandler.HorizontalInput != 0;
   }
 
   private void Jump()
@@ -171,7 +165,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (jumpAnimationFinished) return;
     // Check if the jump button is still being held down
-    if (Input.GetButton("Jump"))
+    if (inputHandler.JumpButtonHeld)
     {
       // If it is, apply the full jump force
       character.velocity = new Vector2(character.velocity.x, jumpForce);
@@ -192,7 +186,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FastFall()
   {
-    if (verticalInput < 0 && platformerState.IsFalling)
+    if (inputHandler.VerticalInput < 0 && platformerState.IsFalling)
     {
       character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
     }
@@ -200,12 +194,12 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FlipCharacterBasedOnInput()
   {
-    if (horizontalInput > 0)
+    if (inputHandler.HorizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);
       platformerState.isFacingRight = true;
     }
-    else if (horizontalInput < 0)
+    else if (inputHandler.HorizontalInput < 0)
     {
       transform.localScale = new Vector2(-1, transform.localScale.y);
       platformerState.isFacingRight = false;

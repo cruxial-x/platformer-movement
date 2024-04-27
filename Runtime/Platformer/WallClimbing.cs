@@ -10,8 +10,8 @@ public class WallClimbing : MonoBehaviour
   private Rigidbody2D character;
   private PlatformerState platformerState;
   private PlatformerMovement platformerMovement;
-  private float verticalInput;
   private int initialAirJumps;
+  private InputHandler inputHandler;
 
   // Initialization
   void Start()
@@ -20,6 +20,7 @@ public class WallClimbing : MonoBehaviour
     platformerMovement = GetComponent<PlatformerMovement>();
     platformerState = platformerMovement.platformerState;
     initialAirJumps = platformerState.airJumps;
+    inputHandler = new InputHandler();
   }
 
   // Debugging
@@ -31,7 +32,7 @@ public class WallClimbing : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    HandleInput();
+    inputHandler.HandleInput();
     HandleWallInteraction();
   }
 
@@ -40,12 +41,6 @@ public class WallClimbing : MonoBehaviour
   {
     if (platformerState.dashing || platformerState.sliding) return;
     ManageWalls();
-  }
-
-  // Handle user input
-  private void HandleInput()
-  {
-    verticalInput = Input.GetAxis("Vertical");
   }
 
   // Handle interaction with walls
@@ -85,7 +80,7 @@ public class WallClimbing : MonoBehaviour
     {
       Debug.Log("Air Jumps: " + platformerState.airJumps + " Initial Air Jumps: " + initialAirJumps);
       platformerState.airJumps = initialAirJumps;
-      if (verticalInput > 0)
+      if (inputHandler.VerticalInput > 0)
       {
         ClimbWall();
       }
