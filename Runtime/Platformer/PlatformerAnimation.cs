@@ -39,6 +39,8 @@ public class PlatformerAnimation : MonoBehaviour
       animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
       animator.SetBool(wallSlidingParam, platformerState.wallSliding);
       animator.SetBool("Sliding", platformerState.sliding);
+      animator.SetBool("GroundAttacking", platformerState.InputHandler.AttackButtonPressed && platformerState.isGrounded);
+      animator.SetBool("AirAttacking", platformerState.InputHandler.AttackButtonPressed && !platformerState.isGrounded && !platformerState.wallClimbing);
     }
   }
 }
