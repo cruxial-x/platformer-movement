@@ -7,6 +7,7 @@ public class InputHandler
   public bool JumpButtonHeld { get; private set; }
   public bool SlideButtonPressed { get; private set; }
   public bool ToggleWeaponButtonPressed { get; private set; }
+  public bool AttackButtonPressed { get; private set; }
 
   public void HandleInput()
   {
@@ -14,6 +15,8 @@ public class InputHandler
     VerticalInput = Input.GetAxis("Vertical");
     JumpButtonDown = Input.GetButtonDown("Jump");
     JumpButtonHeld = Input.GetButton("Jump");
+    // ¯\_(ツ)_/¯ I'm not sure what button attack should be
+    AttackButtonPressed = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl);
     SlideButtonPressed = Input.GetKeyDown(KeyCode.LeftShift);
     ToggleWeaponButtonPressed = Input.GetKeyDown(KeyCode.Q);
   }

@@ -1,5 +1,6 @@
 public class PlatformerState
 {
+  public InputHandler InputHandler { get; set; }
   public bool isGrounded = false;
   public bool isMoving = false;
   public bool dashing = false;

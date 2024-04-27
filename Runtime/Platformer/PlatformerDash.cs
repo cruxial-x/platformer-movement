@@ -16,7 +16,7 @@ public class PlatformerDash : MonoBehaviour
   {
     character = GetComponent<Rigidbody2D>();
     originalGravity = character.gravityScale;
-    platformerState = GetComponent<PlatformerMovement>().platformerState;
+    platformerState = GetComponent<PlatformerMovement>().PlatformerState;
   }
 
   void Update()

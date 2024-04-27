@@ -18,7 +18,7 @@ public class WallClimbing : MonoBehaviour
   {
     character = GetComponent<Rigidbody2D>();
     platformerMovement = GetComponent<PlatformerMovement>();
-    platformerState = platformerMovement.platformerState;
+    platformerState = platformerMovement.PlatformerState;
     initialAirJumps = platformerState.airJumps;
     inputHandler = new InputHandler();
   }

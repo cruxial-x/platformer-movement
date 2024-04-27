@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlatformerMovement : MonoBehaviour
 {
+  public PlatformerState PlatformerState { get; private set; }
   [Header("Movement Properties")]
   public float speed = 10;
   public float jumpForce = 5;
@@ -20,13 +21,11 @@ public class PlatformerMovement : MonoBehaviour
   private Rigidbody2D character;
   private float jumpBufferCount;
   private float coyoteTime;
-  [HideInInspector] public PlatformerState platformerState;
   [Tooltip("Check if using ApplyJumpForce method in an animation event")]
   public bool useJumpAnimationEvent = false;
   [HideInInspector] public bool jumpAnimationFinished = true;
   public BoxCollider2D normalCollider;
   public BoxCollider2D slideCollider;
-  private InputHandler inputHandler;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -36,16 +35,16 @@ public class PlatformerMovement : MonoBehaviour
   {
     character = GetComponent<Rigidbody2D>();
     SetFriction(friction);
-    platformerState = new PlatformerState
+    PlatformerState = new PlatformerState
     {
-      airJumps = airJumps
+      airJumps = airJumps,
+      InputHandler = new InputHandler()
     };
-    inputHandler = new InputHandler();
   }
 
   void SetFriction(float rbFriction)
   {
-    PhysicsMaterial2D physicsMaterial = new PhysicsMaterial2D
+    PhysicsMaterial2D physicsMaterial = new()
     {
       friction = rbFriction
     };
@@ -54,28 +53,28 @@ public class PlatformerMovement : MonoBehaviour
 
   void Update()
   {
-    if (platformerState.dashing || platformerState.sliding) return;
+    if (PlatformerState.dashing || PlatformerState.sliding) return;
 
-    inputHandler.HandleInput();
+    PlatformerState.InputHandler.HandleInput();
     FlipCharacterBasedOnInput();
     CheckGroundStatus();
     ManageJumpBuffer();
-    ToggleWeapon(ref platformerState.weaponSheathed);
+    ToggleWeapon(ref PlatformerState.weaponSheathed);
     StartSlide();
-    normalCollider.enabled = !platformerState.sliding;
+    normalCollider.enabled = !PlatformerState.sliding;
     slideCollider.enabled = !normalCollider.enabled;
     // Check if the character has reached the peak of the jump
-    if (platformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
+    if (PlatformerState.isJumping && character.velocity.y <= 0.01f && jumpAnimationFinished)
     {
-      platformerState.isJumping = false;
-      platformerState.wallKicking = false;
+      PlatformerState.isJumping = false;
+      PlatformerState.wallKicking = false;
     }
   }
 
   void FixedUpdate()
   {
     Slide();
-    if (platformerState.dashing || platformerState.sliding) return;
+    if (PlatformerState.dashing || PlatformerState.sliding) return;
     Move();
     FastFall();
   }
@@ -87,29 +86,29 @@ public class PlatformerMovement : MonoBehaviour
 
   private void CheckGroundStatus()
   {
-    bool wasGrounded = platformerState.isGrounded;
-    platformerState.isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
+    bool wasGrounded = PlatformerState.isGrounded;
+    PlatformerState.isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
 
     // If the player was not grounded but is now, they have landed
-    if (!wasGrounded && platformerState.isGrounded)
+    if (!wasGrounded && PlatformerState.isGrounded)
     {
-      platformerState.isJumping = false;
-      platformerState.airJumps = airJumps; // Reset airJumps when the player lands
+      PlatformerState.isJumping = false;
+      PlatformerState.airJumps = airJumps; // Reset airJumps when the player lands
     }
   }
 
   private void ManageJumpBuffer()
   {
-    if (platformerState.IsClimbing) return;
-    if (platformerState.isGrounded)
+    if (PlatformerState.IsClimbing) return;
+    if (PlatformerState.isGrounded)
       coyoteTime = coyoteTimeLength;
     else
       coyoteTime -= Time.deltaTime;
-    if (inputHandler.JumpButtonDown)
+    if (PlatformerState.InputHandler.JumpButtonDown)
       jumpBufferCount = jumpBufferLength;
 
 
-    if ((jumpBufferCount > 0 && coyoteTime > 0) || (inputHandler.JumpButtonDown && platformerState.airJumps > 0))
+    if ((jumpBufferCount > 0 && coyoteTime > 0) || (PlatformerState.InputHandler.JumpButtonDown && PlatformerState.airJumps > 0))
     {
       Jump();
       jumpBufferCount = 0;
@@ -121,18 +120,18 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
-    character.velocity = new Vector2(inputHandler.HorizontalInput * speed, character.velocity.y);
-    platformerState.isMoving = inputHandler.HorizontalInput != 0;
+    character.velocity = new Vector2(PlatformerState.InputHandler.HorizontalInput * speed, character.velocity.y);
+    PlatformerState.isMoving = PlatformerState.InputHandler.HorizontalInput != 0;
   }
 
   private void Jump()
   {
-    if (platformerState.wallKicking) return;
+    if (PlatformerState.wallKicking) return;
     // Only allow jumping if the player is grounded or has air jumps left
-    if (platformerState.isGrounded || platformerState.airJumps > 0)
+    if (PlatformerState.isGrounded || PlatformerState.airJumps > 0)
     {
 
-      platformerState.isJumping = true;
+      PlatformerState.isJumping = true;
       jumpAnimationFinished = false;
 
       // If not using animation event, apply jump force immediately
@@ -142,20 +141,20 @@ public class PlatformerMovement : MonoBehaviour
       }
 
       // Decrement airJumps if the player is not grounded
-      if (!platformerState.isGrounded)
-        platformerState.airJumps--;
+      if (!PlatformerState.isGrounded)
+        PlatformerState.airJumps--;
     }
   }
   private void StartSlide()
   {
-    if (platformerState.isGrounded && Input.GetKeyDown(KeyCode.LeftShift) && !platformerState.sliding)
+    if (PlatformerState.isGrounded && Input.GetKeyDown(KeyCode.LeftShift) && !PlatformerState.sliding)
     {
-      platformerState.sliding = true;
+      PlatformerState.sliding = true;
     }
   }
   private void Slide()
   {
-    if (platformerState.sliding)
+    if (PlatformerState.sliding)
     {
       character.velocity = new Vector2(transform.localScale.x * speed, character.velocity.y);
     }
@@ -165,7 +164,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (jumpAnimationFinished) return;
     // Check if the jump button is still being held down
-    if (inputHandler.JumpButtonHeld)
+    if (PlatformerState.InputHandler.JumpButtonHeld)
     {
       // If it is, apply the full jump force
       character.velocity = new Vector2(character.velocity.x, jumpForce);
@@ -179,14 +178,14 @@ public class PlatformerMovement : MonoBehaviour
   }
   private void EndSlide() // Fires at end of slide animation
   {
-    platformerState.sliding = false;
+    PlatformerState.sliding = false;
   }
 #pragma warning restore IDE0051
 
 
   private void FastFall()
   {
-    if (inputHandler.VerticalInput < 0 && platformerState.IsFalling)
+    if (PlatformerState.InputHandler.VerticalInput < 0 && PlatformerState.IsFalling)
     {
       character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
     }
@@ -194,15 +193,15 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FlipCharacterBasedOnInput()
   {
-    if (inputHandler.HorizontalInput > 0)
+    if (PlatformerState.InputHandler.HorizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);
-      platformerState.isFacingRight = true;
+      PlatformerState.isFacingRight = true;
     }
-    else if (inputHandler.HorizontalInput < 0)
+    else if (PlatformerState.InputHandler.HorizontalInput < 0)
     {
       transform.localScale = new Vector2(-1, transform.localScale.y);
-      platformerState.isFacingRight = false;
+      PlatformerState.isFacingRight = false;
     }
   }
 }

@@ -19,7 +19,7 @@ public class PlatformerAnimation : MonoBehaviour
   {
     if (animator == null)
       animator = GetComponent<Animator>();
-    platformerState = GetComponent<PlatformerMovement>().platformerState;
+    platformerState = GetComponent<PlatformerMovement>().PlatformerState;
     initialAirJumps = platformerState.airJumps;
   }
 
