@@ -13,6 +13,9 @@ public class PlatformerAnimation : MonoBehaviour
   public string sheathedParam = "Sheathed";
   public string wallClimbingParam = "WallClimbing";
   public string wallSlidingParam = "WallSliding";
+  public string slidingParam = "Sliding";
+  public string groundAttackingParam = "GroundAttacking";
+  public string airAttackingParam = "AirAttacking";
   private int initialAirJumps;
 
   public void Start()
@@ -38,9 +41,9 @@ public class PlatformerAnimation : MonoBehaviour
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
       animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
       animator.SetBool(wallSlidingParam, platformerState.wallSliding);
-      animator.SetBool("Sliding", platformerState.sliding);
-      animator.SetBool("GroundAttacking", platformerState.InputHandler.AttackButtonPressed && platformerState.isGrounded);
-      animator.SetBool("AirAttacking", platformerState.InputHandler.AttackButtonPressed && !platformerState.isGrounded && !platformerState.wallClimbing);
+      animator.SetBool(slidingParam, platformerState.sliding);
+      animator.SetBool(groundAttackingParam, platformerState.GroundAttacking);
+      animator.SetBool(airAttackingParam, platformerState.AirAttacking);
     }
   }
 }

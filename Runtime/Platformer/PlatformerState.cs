@@ -1,6 +1,5 @@
 public class PlatformerState
 {
-  public InputHandler InputHandler { get; set; }
   public bool isGrounded = false;
   public bool isMoving = false;
   public bool dashing = false;
@@ -12,6 +11,7 @@ public class PlatformerState
   public bool wallSliding = false;
   public bool weaponSheathed = true;
   public bool wallKicking = false;
+  public bool isAttacking = false;
   public bool IsFalling
   {
     get
@@ -24,6 +24,20 @@ public class PlatformerState
     get
     {
       return wallClimbing || wallSliding;
+    }
+  }
+  public bool GroundAttacking
+  {
+    get
+    {
+      return isAttacking && isGrounded;
+    }
+  }
+  public bool AirAttacking
+  {
+    get
+    {
+      return isAttacking && !isGrounded && !wallClimbing;
     }
   }
 }

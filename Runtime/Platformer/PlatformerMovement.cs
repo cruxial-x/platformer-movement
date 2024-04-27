@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlatformerMovement : MonoBehaviour
 {
   public PlatformerState PlatformerState { get; private set; }
+  public InputHandler InputHandler { get; private set; }
   [Header("Movement Properties")]
   public float speed = 10;
   public float jumpForce = 5;
@@ -38,8 +39,8 @@ public class PlatformerMovement : MonoBehaviour
     PlatformerState = new PlatformerState
     {
       airJumps = airJumps,
-      InputHandler = new InputHandler()
     };
+    InputHandler = new InputHandler();
   }
 
   void SetFriction(float rbFriction)
@@ -55,7 +56,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (PlatformerState.dashing || PlatformerState.sliding) return;
 
-    PlatformerState.InputHandler.HandleInput();
+    InputHandler.HandleInput();
     FlipCharacterBasedOnInput();
     CheckGroundStatus();
     ManageJumpBuffer();
@@ -104,11 +105,11 @@ public class PlatformerMovement : MonoBehaviour
       coyoteTime = coyoteTimeLength;
     else
       coyoteTime -= Time.deltaTime;
-    if (PlatformerState.InputHandler.JumpButtonDown)
+    if (InputHandler.JumpButtonDown)
       jumpBufferCount = jumpBufferLength;
 
 
-    if ((jumpBufferCount > 0 && coyoteTime > 0) || (PlatformerState.InputHandler.JumpButtonDown && PlatformerState.airJumps > 0))
+    if ((jumpBufferCount > 0 && coyoteTime > 0) || (InputHandler.JumpButtonDown && PlatformerState.airJumps > 0))
     {
       Jump();
       jumpBufferCount = 0;
@@ -120,8 +121,8 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
-    character.velocity = new Vector2(PlatformerState.InputHandler.HorizontalInput * speed, character.velocity.y);
-    PlatformerState.isMoving = PlatformerState.InputHandler.HorizontalInput != 0;
+    character.velocity = new Vector2(InputHandler.HorizontalInput * speed, character.velocity.y);
+    PlatformerState.isMoving = InputHandler.HorizontalInput != 0;
   }
 
   private void Jump()
@@ -164,7 +165,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     if (jumpAnimationFinished) return;
     // Check if the jump button is still being held down
-    if (PlatformerState.InputHandler.JumpButtonHeld)
+    if (InputHandler.JumpButtonHeld)
     {
       // If it is, apply the full jump force
       character.velocity = new Vector2(character.velocity.x, jumpForce);
@@ -185,7 +186,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FastFall()
   {
-    if (PlatformerState.InputHandler.VerticalInput < 0 && PlatformerState.IsFalling)
+    if (InputHandler.VerticalInput < 0 && PlatformerState.IsFalling)
     {
       character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
     }
@@ -193,12 +194,12 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FlipCharacterBasedOnInput()
   {
-    if (PlatformerState.InputHandler.HorizontalInput > 0)
+    if (InputHandler.HorizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);
       PlatformerState.isFacingRight = true;
     }
-    else if (PlatformerState.InputHandler.HorizontalInput < 0)
+    else if (InputHandler.HorizontalInput < 0)
     {
       transform.localScale = new Vector2(-1, transform.localScale.y);
       PlatformerState.isFacingRight = false;
