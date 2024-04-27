@@ -44,6 +44,7 @@ public class PlatformerAnimation : MonoBehaviour
       animator.SetBool(slidingParam, platformerState.sliding);
       animator.SetBool(groundAttackingParam, platformerState.GroundAttacking);
       animator.SetBool(airAttackingParam, platformerState.AirAttacking);
+      animator.SetFloat("AttackState", platformerState.attackCounter);
     }
   }
 }

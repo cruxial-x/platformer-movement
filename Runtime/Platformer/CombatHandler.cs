@@ -5,7 +5,7 @@ public class CombatHandler : MonoBehaviour
 {
   private PlatformerState platformerState;
   private InputHandler inputHandler;
-  private int attackCounter = 0;
+  private bool attackButtonPressed;
 
   void Start()
   {
@@ -16,12 +16,13 @@ public class CombatHandler : MonoBehaviour
 
   void Update()
   {
-    if (inputHandler.AttackButtonPressed && platformerState.isAttacking && attackCounter < 3)
+    attackButtonPressed = inputHandler.AttackButtonPressed;
+    if (attackButtonPressed && platformerState.isAttacking && platformerState.attackCounter < 3)
     {
       // Increment the attack counter if the attack button is pressed during an attack
-      attackCounter++;
+      platformerState.attackCounter++;
     }
-    else if (inputHandler.AttackButtonPressed && !platformerState.isAttacking)
+    else if (attackButtonPressed && !platformerState.isAttacking)
     {
       // Start a new attack if the attack button is pressed and no attack is in progress
       StartAttack();
@@ -31,19 +32,16 @@ public class CombatHandler : MonoBehaviour
   void StartAttack()
   {
     platformerState.isAttacking = true;
-    attackCounter = (attackCounter % 3) + 1; // Cycle through 1, 2, 3
-    // Pass attackCounter to the animator to select the correct attack animation
-    GetComponent<Animator>().SetInteger("AttackState", attackCounter);
+    platformerState.attackCounter = (platformerState.attackCounter % 3) + 1; // Cycle through 1, 2, 3
   }
 
 #pragma warning disable IDE0051
   void EndAttack() // Used as an animation event
   {
-    platformerState.isAttacking = false;
-    // If the attack button is not being pressed, reset the attack counter
-    if (!inputHandler.AttackButtonPressed)
+    if (!attackButtonPressed)
     {
-      attackCounter = 0;
+      platformerState.attackCounter = 0;
+      platformerState.isAttacking = false;
     }
   }
 #pragma warning restore IDE0051

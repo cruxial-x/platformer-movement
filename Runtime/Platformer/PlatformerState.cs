@@ -12,6 +12,7 @@ public class PlatformerState
   public bool weaponSheathed = true;
   public bool wallKicking = false;
   public bool isAttacking = false;
+  public int attackCounter = 0;
   public bool IsFalling
   {
     get
