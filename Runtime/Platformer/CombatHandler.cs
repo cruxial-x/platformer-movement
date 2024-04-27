@@ -16,6 +16,7 @@ public class CombatHandler : MonoBehaviour
 
   void Update()
   {
+    if (platformerState.dashing || platformerState.sliding || platformerState.weaponSheathed) return;
     attackButtonPressed = inputHandler.AttackButtonPressed;
     if (attackButtonPressed && platformerState.isAttacking && platformerState.attackCounter < 3)
     {
