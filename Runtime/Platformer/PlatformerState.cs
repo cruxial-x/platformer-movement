@@ -27,18 +27,31 @@ public class PlatformerState
       return wallClimbing || wallSliding;
     }
   }
-  public bool GroundAttacking
+  public bool IsGroundAttacking
   {
     get
     {
       return isAttacking && isGrounded;
     }
   }
-  public bool AirAttacking
+  public bool IsAirAttacking
   {
     get
     {
       return isAttacking && !isGrounded && !wallClimbing;
     }
+  }
+  public bool ShouldAirJump
+  {
+    get
+    {
+      return (isJumping && airJumps < initialAirJumps) || wallKicking; // Wallkick uses air jump animation
+    }
+  }
+  private int initialAirJumps;
+  public PlatformerState(int airJumps)
+  {
+    airJumps = airJumps < 0 ? 0 : airJumps;
+    initialAirJumps = airJumps;
   }
 }

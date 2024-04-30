@@ -36,10 +36,7 @@ public class PlatformerMovement : MonoBehaviour
   {
     character = GetComponent<Rigidbody2D>();
     SetFriction(friction);
-    PlatformerState = new PlatformerState
-    {
-      airJumps = airJumps,
-    };
+    PlatformerState = new PlatformerState(airJumps);
     InputHandler = new InputHandler();
   }
 
@@ -81,6 +78,7 @@ public class PlatformerMovement : MonoBehaviour
   }
   void ToggleWeapon(ref bool sheathed)
   {
+    if (PlatformerState.isAttacking) return;
     if (Input.GetKeyDown(KeyCode.Q))
       sheathed = !sheathed;
   }
@@ -121,6 +119,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void Move()
   {
+    if (PlatformerState.IsGroundAttacking) return;
     character.velocity = new Vector2(InputHandler.HorizontalInput * speed, character.velocity.y);
     PlatformerState.isMoving = InputHandler.HorizontalInput != 0;
   }
@@ -148,7 +147,7 @@ public class PlatformerMovement : MonoBehaviour
   }
   private void StartSlide()
   {
-    if (PlatformerState.isGrounded && Input.GetKeyDown(KeyCode.LeftShift) && !PlatformerState.sliding)
+    if (PlatformerState.isGrounded && Input.GetKeyDown(KeyCode.LeftShift) && !PlatformerState.sliding && jumpAnimationFinished)
     {
       PlatformerState.sliding = true;
     }
@@ -194,6 +193,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FlipCharacterBasedOnInput()
   {
+    if (PlatformerState.isAttacking || (!PlatformerState.isGrounded && !PlatformerState.ShouldAirJump)) return;
     if (InputHandler.HorizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);

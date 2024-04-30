@@ -6,16 +6,22 @@ public class CombatHandler : MonoBehaviour
   private PlatformerState platformerState;
   private InputHandler inputHandler;
   private bool attackButtonPressed;
+  private Rigidbody2D character;
 
   void Start()
   {
     PlatformerMovement platformerMovement = GetComponent<PlatformerMovement>();
     platformerState = platformerMovement.PlatformerState;
     inputHandler = platformerMovement.InputHandler;
+    character = GetComponent<Rigidbody2D>();
   }
 
   void Update()
   {
+    if (platformerState.IsGroundAttacking)
+    {
+      character.velocity = new Vector2(0, character.velocity.y);
+    }
     if (platformerState.dashing || platformerState.sliding || platformerState.weaponSheathed) return;
     attackButtonPressed = inputHandler.AttackButtonPressed;
     if (attackButtonPressed && platformerState.isAttacking && platformerState.attackCounter < 3)

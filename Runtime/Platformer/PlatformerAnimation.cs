@@ -32,18 +32,15 @@ public class PlatformerAnimation : MonoBehaviour
     {
       bool isJumping = platformerState.isJumping;
       animator.SetBool(jumpingParam, isJumping);
-      animator.SetBool(airJumpParam, (
-        isJumping && platformerState.airJumps < initialAirJumps)
-        || platformerState.wallKicking // Wallkick uses air jump animation
-        );
+      animator.SetBool(airJumpParam, platformerState.ShouldAirJump);
       animator.SetBool(fallingParam, platformerState.IsFalling);
       animator.SetBool(runningParam, platformerState.isMoving && platformerState.isGrounded);
       animator.SetBool(sheathedParam, platformerState.weaponSheathed);
       animator.SetBool(wallClimbingParam, platformerState.wallClimbing);
       animator.SetBool(wallSlidingParam, platformerState.wallSliding);
       animator.SetBool(slidingParam, platformerState.sliding);
-      animator.SetBool(groundAttackingParam, platformerState.GroundAttacking);
-      animator.SetBool(airAttackingParam, platformerState.AirAttacking);
+      animator.SetBool(groundAttackingParam, platformerState.IsGroundAttacking);
+      animator.SetBool(airAttackingParam, platformerState.IsAirAttacking);
       animator.SetFloat("AttackState", platformerState.attackCounter);
     }
   }
