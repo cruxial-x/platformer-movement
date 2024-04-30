@@ -20,7 +20,7 @@ public class WallClimbing : MonoBehaviour
     platformerMovement = GetComponent<PlatformerMovement>();
     platformerState = platformerMovement.PlatformerState;
     initialAirJumps = platformerState.airJumps;
-    inputHandler = new InputHandler();
+    inputHandler = platformerMovement.InputHandler;
   }
 
   // Debugging
@@ -32,7 +32,6 @@ public class WallClimbing : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    inputHandler.HandleInput();
     HandleWallInteraction();
   }
 
@@ -49,7 +48,6 @@ public class WallClimbing : MonoBehaviour
     isTouchingWall = Physics2D.Raycast(wallCheck.position, Vector2.right * transform.localScale.x, wallCheckDistance, whatIsWall);
 
     if (platformerState.dashing || platformerState.sliding) return;
-
     if (!isTouchingWall || platformerState.isGrounded)
     {
       platformerState.wallClimbing = false;
@@ -78,7 +76,6 @@ public class WallClimbing : MonoBehaviour
 
     if (isTouchingWall && !platformerState.isGrounded)
     {
-      Debug.Log("Air Jumps: " + platformerState.airJumps + " Initial Air Jumps: " + initialAirJumps);
       platformerState.airJumps = initialAirJumps;
       if (inputHandler.VerticalInput > 0)
       {
