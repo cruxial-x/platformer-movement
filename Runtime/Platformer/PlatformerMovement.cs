@@ -193,7 +193,7 @@ public class PlatformerMovement : MonoBehaviour
 
   private void FlipCharacterBasedOnInput()
   {
-    if (PlatformerState.isAttacking || (!PlatformerState.isGrounded && !PlatformerState.ShouldAirJump)) return;
+    if (PlatformerState.isAttacking || (!PlatformerState.isGrounded && !PlatformerState.ShouldAirJump && !PlatformerState.wallSliding)) return;
     if (InputHandler.HorizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);
