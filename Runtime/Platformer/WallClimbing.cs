@@ -6,12 +6,13 @@ public class WallClimbing : MonoBehaviour
   public Transform wallCheck;
   public float wallCheckDistance = 0.1f;
   private bool isTouchingWall;
-  private float climbingSpeed = 5;
+  public float climbingSpeed = 5;
   private Rigidbody2D character;
   private PlatformerState platformerState;
   private PlatformerMovement platformerMovement;
   private int initialAirJumps;
   private InputHandler inputHandler;
+  public bool canClimbWalls = false;
 
   // Initialization
   void Start()
@@ -77,7 +78,7 @@ public class WallClimbing : MonoBehaviour
     if (isTouchingWall && !platformerState.isGrounded)
     {
       platformerState.airJumps = initialAirJumps;
-      if (inputHandler.VerticalInput > 0)
+      if (inputHandler.VerticalInput > 0 && canClimbWalls)
       {
         ClimbWall();
       }
