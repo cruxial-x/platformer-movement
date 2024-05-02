@@ -92,6 +92,7 @@ public class PlatformerMovement : MonoBehaviour
     if (!wasGrounded && PlatformerState.isGrounded)
     {
       PlatformerState.isJumping = false;
+      PlatformerState.wallKicking = false;
       PlatformerState.airJumps = airJumps; // Reset airJumps when the player lands
     }
   }
