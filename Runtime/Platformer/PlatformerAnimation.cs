@@ -16,14 +16,12 @@ public class PlatformerAnimation : MonoBehaviour
   public string slidingParam = "Sliding";
   public string groundAttackingParam = "GroundAttacking";
   public string airAttackingParam = "AirAttacking";
-  private int initialAirJumps;
 
   public void Start()
   {
     if (animator == null)
       animator = GetComponent<Animator>();
     platformerState = GetComponent<PlatformerMovement>().PlatformerState;
-    initialAirJumps = platformerState.airJumps;
   }
 
   public void Update()
