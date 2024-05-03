@@ -93,6 +93,8 @@ public class PlatformerMovement : MonoBehaviour
     {
       PlatformerState.isJumping = false;
       PlatformerState.wallKicking = false;
+      PlatformerState.isAttacking = false;
+      PlatformerState.attackCounter = 0;
       PlatformerState.airJumps = airJumps; // Reset airJumps when the player lands
     }
   }
