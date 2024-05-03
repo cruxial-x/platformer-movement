@@ -7,6 +7,9 @@ public class CombatHandler : MonoBehaviour
   private InputHandler inputHandler;
   private bool attackButtonPressed;
   private Rigidbody2D character;
+  private int attackEndCounter = 0;
+  private float comboTimingWindow = 0.5f; // 0.5 seconds to perform the next hit
+  private float lastAttackTime = 0; // Time when the last attack was registered
 
   void Start()
   {
@@ -23,11 +26,16 @@ public class CombatHandler : MonoBehaviour
       character.velocity = new Vector2(0, character.velocity.y);
     }
     if (platformerState.dashing || platformerState.sliding || platformerState.weaponSheathed) return;
+
     attackButtonPressed = inputHandler.AttackButtonPressed;
     if (attackButtonPressed && platformerState.isAttacking && platformerState.attackCounter < 3)
     {
-      // Increment the attack counter if the attack button is pressed during an attack
-      platformerState.attackCounter++;
+      // Check if the attack is within the allowed timing window
+      if (Time.time - lastAttackTime <= comboTimingWindow)
+      {
+        // Increment the attack counter if the attack button is pressed during an attack
+        platformerState.attackCounter++;
+      }
     }
     else if (attackButtonPressed && !platformerState.isAttacking)
     {
@@ -40,14 +48,18 @@ public class CombatHandler : MonoBehaviour
   {
     platformerState.isAttacking = true;
     platformerState.attackCounter = (platformerState.attackCounter % 3) + 1; // Cycle through 1, 2, 3
+    attackEndCounter = platformerState.attackCounter;
+    lastAttackTime = Time.time; // Reset the last attack time
   }
 
 #pragma warning disable IDE0051
   void EndAttack() // Used as an animation event
   {
-    if (!attackButtonPressed)
+    Debug.Log(platformerState.attackCounter);
+    if (platformerState.attackCounter >= attackEndCounter)
     {
       platformerState.attackCounter = 0;
+      attackEndCounter = 0;
       platformerState.isAttacking = false;
     }
   }
