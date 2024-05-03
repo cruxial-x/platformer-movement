@@ -1,5 +1,3 @@
-using System.Collections;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlatformerMovement : MonoBehaviour
