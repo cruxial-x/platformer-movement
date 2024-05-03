@@ -25,6 +25,7 @@ public class PlatformerMovement : MonoBehaviour
   [HideInInspector] public bool jumpAnimationFinished = true;
   public BoxCollider2D normalCollider;
   public BoxCollider2D slideCollider;
+  public float detachBuffer = 0.5f;
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -118,6 +119,9 @@ public class PlatformerMovement : MonoBehaviour
       jumpBufferCount -= Time.deltaTime;
   }
 
+  private float detachTimer;
+  private bool isDetaching;
+
   private void Move()
   {
     if (PlatformerState.IsGroundAttacking) return;
@@ -195,12 +199,37 @@ public class PlatformerMovement : MonoBehaviour
   private void FlipCharacterBasedOnInput()
   {
     if (PlatformerState.isAttacking || (!PlatformerState.isGrounded && !PlatformerState.ShouldAirJump && !PlatformerState.wallSliding)) return;
-    if (InputHandler.HorizontalInput > 0)
+
+    float horizontalInput = InputHandler.HorizontalInput;
+
+    // If the player starts to move in the opposite direction while wall sliding, start the detach timer
+    if (PlatformerState.wallSliding && ((PlatformerState.isFacingRight && horizontalInput < 0) || (!PlatformerState.isFacingRight && horizontalInput > 0)))
+    {
+      if (!isDetaching)
+      {
+        isDetaching = true;
+        detachTimer = Time.time;
+      }
+      else if (Time.time - detachTimer > detachBuffer)
+      {
+        isDetaching = false;
+        FlipCharacter(horizontalInput);
+      }
+    }
+    else
+    {
+      isDetaching = false;
+      FlipCharacter(horizontalInput);
+    }
+  }
+  private void FlipCharacter(float horizontalInput)
+  {
+    if (horizontalInput > 0)
     {
       transform.localScale = new Vector2(1, transform.localScale.y);
       PlatformerState.isFacingRight = true;
     }
-    else if (InputHandler.HorizontalInput < 0)
+    else if (horizontalInput < 0)
     {
       transform.localScale = new Vector2(-1, transform.localScale.y);
       PlatformerState.isFacingRight = false;
