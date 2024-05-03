@@ -60,7 +60,7 @@ public class CombatHandler : MonoBehaviour
     if (platformerState.attackCounter >= attackEndCounter)
     {
       // Special case for the last attack in the air combo
-      if (airSlam && inputHandler.AttackButtonHeld && platformerState.attackCounter < 3 && !platformerState.isGrounded)
+      if (airSlam && inputHandler.AttackButtonHeld && platformerState.attackCounter >= 2 && !platformerState.isGrounded)
       {
         platformerState.attackCounter = (platformerState.attackCounter % 3) + 1;
         return;
