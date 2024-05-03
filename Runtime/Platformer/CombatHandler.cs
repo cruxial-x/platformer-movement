@@ -10,6 +10,7 @@ public class CombatHandler : MonoBehaviour
   private int attackEndCounter = 0;
   private float comboTimingWindow = 0.5f; // 0.5 seconds to perform the next hit
   private float lastAttackTime = 0; // Time when the last attack was registered
+  public bool airSlam = true;
 
   void Start()
   {
@@ -58,6 +59,12 @@ public class CombatHandler : MonoBehaviour
     Debug.Log(platformerState.attackCounter);
     if (platformerState.attackCounter >= attackEndCounter)
     {
+      // Special case for the last attack in the air combo
+      if (airSlam && inputHandler.AttackButtonHeld && platformerState.attackCounter < 3 && !platformerState.isGrounded)
+      {
+        platformerState.attackCounter = (platformerState.attackCounter % 3) + 1;
+        return;
+      }
       platformerState.attackCounter = 0;
       attackEndCounter = 0;
       platformerState.isAttacking = false;
