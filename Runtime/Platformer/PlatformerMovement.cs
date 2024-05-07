@@ -26,6 +26,9 @@ public class PlatformerMovement : MonoBehaviour
   public BoxCollider2D normalCollider;
   public BoxCollider2D slideCollider;
   public float detachBuffer = 0.5f;
+  private float detachTimer;
+  private bool isDetaching;
+
   void OnDrawGizmos()
   {
     Gizmos.color = Color.red;
@@ -119,12 +122,9 @@ public class PlatformerMovement : MonoBehaviour
       jumpBufferCount -= Time.deltaTime;
   }
 
-  private float detachTimer;
-  private bool isDetaching;
-
   private void Move()
   {
-    if (PlatformerState.IsGroundAttacking) return;
+    if (PlatformerState.IsGroundAttacking || PlatformerState.IsClimbing) return;
     character.velocity = new Vector2(InputHandler.HorizontalInput * speed, character.velocity.y);
     PlatformerState.isMoving = InputHandler.HorizontalInput != 0;
   }
@@ -195,7 +195,6 @@ public class PlatformerMovement : MonoBehaviour
       character.velocity = new Vector2(character.velocity.x, -jumpForce * 2);
     }
   }
-
   private void FlipCharacterBasedOnInput()
   {
     if (PlatformerState.isAttacking || (!PlatformerState.isGrounded && !PlatformerState.ShouldAirJump && !PlatformerState.wallSliding)) return;
@@ -203,7 +202,11 @@ public class PlatformerMovement : MonoBehaviour
     float horizontalInput = InputHandler.HorizontalInput;
 
     // If the player starts to move in the opposite direction while wall sliding, start the detach timer
-    if (PlatformerState.wallSliding && ((PlatformerState.isFacingRight && horizontalInput < 0) || (!PlatformerState.isFacingRight && horizontalInput > 0)))
+    bool isFacingRight = PlatformerState.isFacingRight;
+    bool isMovingRight = InputHandler.HorizontalInput > 0;
+    bool isFacingLeft = !isFacingRight;
+    bool isMovingLeft = InputHandler.HorizontalInput < 0;
+    if (PlatformerState.wallSliding && ((isFacingLeft && isMovingRight) || (isFacingRight && isMovingLeft)))
     {
       if (!isDetaching)
       {
