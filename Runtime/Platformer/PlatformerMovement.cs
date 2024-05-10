@@ -1,10 +1,11 @@
 using UnityEngine;
 internal class Dev
 {
+  public static bool loggingEnabled = false;
   // Only log messages in debug builds
   public static void Log<T>(T message)
   {
-    if (Debug.isDebugBuild)
+    if (Debug.isDebugBuild && loggingEnabled)
     {
       Debug.Log(message.ToString());
     }
