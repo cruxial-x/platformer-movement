@@ -1,4 +1,15 @@
 using UnityEngine;
+internal class Dev
+{
+  // Only log messages in debug builds
+  public static void Log<T>(T message)
+  {
+    if (Debug.isDebugBuild)
+    {
+      Debug.Log(message.ToString());
+    }
+  }
+}
 
 public class PlatformerMovement : MonoBehaviour
 {

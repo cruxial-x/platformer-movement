@@ -56,7 +56,7 @@ public class CombatHandler : MonoBehaviour
 #pragma warning disable IDE0051
   void EndAttack() // Used as an animation event
   {
-    Debug.Log(platformerState.attackCounter);
+    Dev.Log(platformerState.attackCounter);
     if (platformerState.attackCounter >= attackEndCounter)
     {
       // Special case for the last attack in the air combo
